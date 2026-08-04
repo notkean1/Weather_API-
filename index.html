@@ -137,10 +137,10 @@
             font-weight: 400;
             color: var(--text-primary);
             margin-top: 4px;
-            margin-bottom: 12px; /* Nilagyan ng spacing para sa button */
+            margin-bottom: 12px;
         }
 
-        /* --- Live Satellite Button Style --- */
+        /* --- Live Satellite Trigger Button --- */
         .satellite-btn {
             display: inline-flex;
             align-items: center;
@@ -152,7 +152,7 @@
             border-radius: 20px;
             font-size: 0.88rem;
             font-weight: 500;
-            text-decoration: none;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
@@ -298,6 +298,159 @@
         .forecast-high { color: var(--text-primary); }
         .forecast-low { color: var(--text-secondary); margin-left: 4px; }
 
+        /* --- SATELLITE POP-UP MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none; /* Default Hidden */
+        }
+
+        .satellite-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 520px;
+            height: 420px;
+            min-width: 320px;
+            min-height: 280px;
+            max-width: 90vw;
+            max-height: 85vh;
+            background-color: var(--bg-card);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            resize: both; /* Allow resizing */
+        }
+
+        .modal-header {
+            padding: 12px 16px;
+            background-color: #1e2632;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move; /* Indicates Draggable */
+            user-select: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .control-btn.close-btn:hover {
+            background-color: #ef4444;
+            color: #fff;
+        }
+
+        .modal-body {
+            flex: 1;
+            position: relative;
+            background-color: #000;
+        }
+
+        .satellite-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .modal-footer {
+            padding: 10px 16px;
+            background-color: #1e2632;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .location-badge {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .external-link-btn {
+            color: var(--accent-blue);
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .external-link-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Minimized Floating Bar Style --- */
+        .satellite-modal.minimized {
+            top: auto !important;
+            left: auto !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            transform: none !important;
+            width: 280px !important;
+            height: 48px !important;
+            min-width: unset !important;
+            min-height: unset !important;
+            resize: none !important;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        .satellite-modal.minimized .modal-body,
+        .satellite-modal.minimized .modal-footer {
+            display: none !important;
+        }
+
+        .satellite-modal.minimized .modal-header {
+            border-bottom: none;
+            height: 100%;
+            border-radius: 24px;
+            background-color: var(--bg-card);
+        }
+
         @media (max-width: 768px) {
             .weather-header { flex-direction: column; }
             .header-right { text-align: left; align-items: flex-start; }
@@ -334,11 +487,11 @@
             <p class="date-time" id="date-time-display">--</p>
             <p class="weather-condition" id="weather-condition">Binabasa ang data...</p>
 
-            <!-- See Live Satellite Button sa Ilalim ng Condition Text -->
-            <a href="https://zoom.earth/storms/94w-2026/" target="_blank" class="satellite-btn">
+            <!-- See Live Satellite Modal Trigger Button -->
+            <button class="satellite-btn" onclick="openSatelliteModal()">
                 <i class="fa-solid fa-earth-americas"></i>
                 <span>See Live Satellite</span>
-            </a>
+            </button>
         </div>
     </header>
 
@@ -373,16 +526,45 @@
     </section>
 </div>
 
+<!-- POPUP MODAL OVERLAY & CONTAINER -->
+<div class="modal-overlay" id="modal-overlay" onclick="minimizeSatelliteModal()"></div>
+
+<div class="satellite-modal" id="satellite-modal">
+    <div class="modal-header" id="modal-header">
+        <div class="modal-title" onclick="restoreSatelliteModal()" style="cursor: pointer;">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span>Live Satellite Tracking</span>
+        </div>
+        <div class="modal-controls">
+            <button class="control-btn" title="Minimize" onclick="minimizeSatelliteModal()"><i class="fa-solid fa-minus"></i></button>
+            <button class="control-btn close-btn" title="Close" onclick="closeSatelliteModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+    
+    <div class="modal-body">
+        <iframe id="satellite-frame" class="satellite-iframe" src="" allowfullscreen></iframe>
+    </div>
+
+    <div class="modal-footer">
+        <span class="location-badge"><i class="fa-solid fa-location-arrow"></i> <span id="modal-country">Pilipinas</span></span>
+        <a href="https://zoom.earth/storms/94w-2026/" target="_blank" class="external-link-btn">
+            <span>Palakihin sa Zoom Earth</span>
+            <i class="fa-solid fa-up-right-from-square"></i>
+        </a>
+    </div>
+</div>
+
 <script>
     let activeTab = 'temp';
     let weatherDataCache = null;
     let userLat = 14.5995;
     let userLon = 120.9842;
+    let currentCountry = "Pilipinas";
 
     window.onload = function() {
         initGeolocation();
-        
-        // Realtime Refresh: Kukuha ng pinakabagong data kada 10 segundo
+        initDraggableModal();
+
         setInterval(() => {
             fetchWeatherData(userLat, userLon);
         }, 10000);
@@ -406,22 +588,22 @@
         }
     }
 
-    // Dynamic OpenStreetMap Geocoding
     function fetchLocationName(lat, lon) {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
             .then(res => res.json())
             .then(data => {
                 const addr = data.address || {};
                 const city = addr.city || addr.town || addr.municipality || addr.village || addr.suburb || "Lokal na Lugar";
-                const country = addr.country || "";
+                const country = addr.country || "Pilipinas";
+                currentCountry = country;
                 document.getElementById("location-name").innerText = `${city}, ${country}`;
+                document.getElementById("modal-country").innerText = country;
             })
             .catch(() => {
                 document.getElementById("location-name").innerText = "Lokal na Panahon";
             });
     }
 
-    // Fetch Weather Data galing sa Open-Meteo
     function fetchWeatherData(lat, lon) {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
 
@@ -445,7 +627,6 @@
         document.getElementById("weather-condition").innerText = getWeatherText(current.weather_code);
         document.getElementById("main-icon").className = `fa-solid ${getWeatherIconClass(current.weather_code)} main-icon`;
 
-        // Updated Current Time Format
         const now = new Date();
         const days = ['Linggo', 'Lunes', 'Martes', 'Miyerkules', 'Huwebes', 'Biyernes', 'Sabado'];
         const dayName = days[now.getDay()];
@@ -456,12 +637,96 @@
         document.getElementById("date-time-display").innerText = `${dayName} ${hours}:${minutes} ${ampm}`;
     }
 
+    /* --- SATELLITE MODAL LOGIC --- */
+    function openSatelliteModal() {
+        const modal = document.getElementById("satellite-modal");
+        const overlay = document.getElementById("modal-overlay");
+        const iframe = document.getElementById("satellite-frame");
+
+        if (modal.classList.contains("minimized")) {
+            restoreSatelliteModal();
+            return;
+        }
+
+        // Set Zoom Earth iframe embed src
+        if (!iframe.src || iframe.src === "about:blank") {
+            iframe.src = `https://zoom.earth/storms/94w-2026/#overlay=wind`;
+        }
+
+        modal.style.display = "flex";
+        overlay.style.display = "block";
+    }
+
+    function minimizeSatelliteModal() {
+        const modal = document.getElementById("satellite-modal");
+        const overlay = document.getElementById("modal-overlay");
+        modal.classList.add("minimized");
+        overlay.style.display = "none";
+    }
+
+    function restoreSatelliteModal() {
+        const modal = document.getElementById("satellite-modal");
+        const overlay = document.getElementById("modal-overlay");
+        if (modal.classList.contains("minimized")) {
+            modal.classList.remove("minimized");
+            overlay.style.display = "block";
+        }
+    }
+
+    function closeSatelliteModal() {
+        const modal = document.getElementById("satellite-modal");
+        const overlay = document.getElementById("modal-overlay");
+        const iframe = document.getElementById("satellite-frame");
+
+        modal.style.display = "none";
+        overlay.style.display = "none";
+        modal.classList.remove("minimized");
+        iframe.src = ""; // Stop iframe loading on close
+    }
+
+    /* --- DRAGGABLE MODAL IMPLEMENTATION --- */
+    function initDraggableModal() {
+        const modal = document.getElementById("satellite-modal");
+        const header = document.getElementById("modal-header");
+
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+        header.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            if (modal.classList.contains("minimized")) return;
+            e = e || window.event;
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+
+            modal.style.top = (modal.offsetTop - pos2) + "px";
+            modal.style.left = (modal.offsetLeft - pos1) + "px";
+            modal.style.transform = "none"; // Remove CSS translate centering on drag
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+
     function switchTab(tabName, element) {
         activeTab = tabName;
         document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
 
-        // Dynamic Theme Accent per Tab
         const root = document.documentElement;
         if (tabName === 'temp') root.style.setProperty('--line-graph', '#f59e0b');
         else if (tabName === 'precip') root.style.setProperty('--line-graph', '#38bdf8');
@@ -472,7 +737,6 @@
         }
     }
 
-    // Render SVG Graph base sa piniling tab
     function renderGraph(data, type) {
         const hourly = data.hourly;
         const nowHour = new Date().getHours();
@@ -491,11 +755,9 @@
             unit = "k/h";
         }
 
-        // Render Numbers
         const numbersContainer = document.getElementById("graph-numbers");
         numbersContainer.innerHTML = values.map(val => `<div class="temp-point">${val}${unit}</div>`).join('');
 
-        // Render Timestamps
         const timesContainer = document.getElementById("graph-times");
         let timesHTML = "";
         for (let i = 0; i < 8; i++) {
@@ -506,7 +768,6 @@
         }
         timesContainer.innerHTML = timesHTML;
 
-        // Generate Smooth SVG Path
         const minVal = Math.min(...values);
         const maxVal = Math.max(...values);
         const range = (maxVal - minVal) || 1;
