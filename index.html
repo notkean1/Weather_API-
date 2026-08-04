@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modernong Lagay ng Panahon</title>
-    <!-- Google Fonts for modern look -->
+    <title>Modern Dynamic Weather Dashboard</title>
+    <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* Tweak: A slightly warmer, more premium dark theme color palette */
             --bg-deep-slate: #1c232e;
             --bg-card: #252d3a;
             --bg-card-hover: #2d3848;
@@ -18,7 +17,8 @@
             --text-secondary: #94a3b8;
             --accent-yellow: #f59e0b;
             --accent-blue: #38bdf8;
-            --line-graph: #f59e0b; /* Yellow accent for the temperature line */
+            --accent-green: #10b981;
+            --line-graph: #f59e0b;
         }
 
         * {
@@ -31,7 +31,7 @@
         body {
             background-color: var(--bg-deep-slate);
             color: var(--text-primary);
-            padding: 40px;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -40,44 +40,41 @@
 
         .weather-container {
             width: 100%;
-            max-width: 1100px; /* Wider for full website feel */
-            border-radius: 12px;
+            max-width: 1100px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            background-color: var(--bg-deep-slate);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* --- Header Section (Same layout as screenshot) --- */
+        /* --- Header Section --- */
         .weather-header {
-            background-color: var(--bg-deep-slate);
             padding: 30px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        /* Left Side: Icon, Temp, Dets */
         .header-left {
             display: flex;
             align-items: flex-start;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .main-weather-icon-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100px;
+            width: 90px;
         }
 
         .main-icon {
-            font-size: 6rem; /* Huge icon like Google's */
-            color: var(--text-secondary);
-        }
-        
-        .main-icon-rain-drop {
+            font-size: 5.5rem;
             color: var(--accent-blue);
-            margin-top: -15px;
-            font-size: 1.5rem;
         }
 
         .temperature-container {
@@ -86,7 +83,7 @@
         }
 
         .main-temperature {
-            font-size: 9rem; /* Very large like the screenshot */
+            font-size: 7.5rem;
             font-weight: 300;
             line-height: 0.8;
             color: var(--text-primary);
@@ -98,28 +95,32 @@
             font-size: 1.5rem;
             color: var(--text-secondary);
             margin-top: 10px;
+            margin-left: 5px;
         }
         
         .unit-c { color: var(--text-primary); }
-        .unit-divider { margin: 0 2px; color: var(--text-secondary); }
 
         .weather-details-list {
             list-style: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-secondary);
             margin-top: 10px;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
-        /* Right Side: Title, Time, Condition */
         .header-right {
             text-align: right;
         }
 
         .weather-title {
-            font-size: 2.2rem;
-            font-weight: 400;
+            font-size: 2rem;
+            font-weight: 500;
             margin-bottom: 5px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
         }
 
         .date-time {
@@ -130,13 +131,13 @@
 
         .weather-condition {
             font-size: 1.1rem;
-            font-weight: 300;
-            color: var(--text-secondary);
+            font-weight: 400;
+            color: var(--text-primary);
+            margin-top: 4px;
         }
 
         /* --- Tabs Section --- */
         .tabs-section {
-            background-color: var(--bg-deep-slate);
             padding: 10px 30px;
             border-bottom: 1px solid rgba(148, 163, 184, 0.1);
         }
@@ -162,13 +163,12 @@
 
         .tab-item.active {
             color: var(--text-primary);
-            border-bottom: 3px solid var(--accent-yellow);
+            border-bottom: 3px solid var(--line-graph);
             font-weight: 500;
         }
 
         /* --- Hourly Graph Section --- */
         .hourly-graph-section {
-            background-color: var(--bg-deep-slate);
             padding: 30px;
             position: relative;
         }
@@ -183,22 +183,15 @@
 
         .temp-point {
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-primary);
             text-align: center;
-        }
-        
-        .temp-point.point-3pm {
-            margin-top: -20px; /* Elevation for 3PM */
-        }
-        
-        .temp-point.point-6pm {
-            margin-top: -10px; /* Elevation for 6PM */
+            width: 40px;
         }
 
         .graph-svg {
             width: 100%;
-            height: 60px; /* Adjusted to look less 'clunky' than the screenshot's block */
+            height: 70px;
             margin-top: 10px;
             position: relative;
             z-index: 1;
@@ -209,10 +202,12 @@
             stroke: var(--line-graph);
             stroke-width: 3;
             stroke-linecap: round;
+            transition: all 0.5s ease;
         }
         
         .graph-fill {
-            fill: rgba(245, 158, 11, 0.1); /* Subtle background fill under line */
+            fill: rgba(245, 158, 11, 0.1);
+            transition: all 0.5s ease;
         }
 
         .graph-times {
@@ -226,228 +221,336 @@
 
         /* --- Daily Forecast Section --- */
         .daily-forecast-section {
-            background-color: var(--bg-deep-slate);
-            padding: 20px;
+            padding: 20px 30px 30px 30px;
             display: grid;
-            grid-template-columns: repeat(8, 1fr); /* 8 days grid */
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
         }
 
         .forecast-card {
-            background-color: rgba(255, 255, 255, 0.03); /* Translucent cards for website look */
-            border-radius: 8px;
-            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 15px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             transition: all 0.3s ease;
             cursor: pointer;
-            border: 1px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .forecast-card:hover {
             background-color: var(--bg-card-hover);
-            transform: translateY(-5px); /* Tweak: Hover elevation */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            border-color: rgba(148, 163, 184, 0.1);
+            transform: translateY(-4px);
+            border-color: rgba(148, 163, 184, 0.2);
         }
 
         .forecast-card.selected {
             background-color: var(--bg-card);
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            border-color: var(--accent-blue);
         }
 
         .forecast-day {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             color: var(--text-secondary);
         }
 
         .forecast-icon-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px 0;
-            font-size: 2.2rem;
+            margin: 12px 0;
+            font-size: 1.8rem;
             color: var(--accent-blue);
-        }
-
-        .forecast-icon-rain-drop {
-            color: var(--accent-blue);
-            margin-top: -5px;
-            font-size: 0.8rem;
-        }
-        
-        .forecast-card.thunder-icon-card {
-            color: var(--accent-yellow); /* Yellow icons for thunder */
         }
 
         .forecast-temps {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
-            color: var(--text-primary);
         }
 
         .forecast-high { color: var(--text-primary); }
-        .forecast-low { color: var(--text-secondary); margin-left: 2px;}
+        .forecast-low { color: var(--text-secondary); margin-left: 4px; }
 
+        @media (max-width: 768px) {
+            .weather-header { flex-direction: column; }
+            .header-right { text-align: left; }
+            .main-temperature { font-size: 5.5rem; }
+        }
     </style>
 </head>
 <body>
 
 <div class="weather-container">
-    <!-- Header Section (Same layout as screenshot) -->
+    <!-- Header Section -->
     <header class="weather-header">
         <div class="header-left">
             <div class="main-weather-icon-container">
-                <i class="fa-solid fa-cloud-showers-heavy main-icon"></i>
+                <i id="main-icon" class="fa-solid fa-cloud-sun main-icon"></i>
             </div>
             <div class="temperature-container">
-                <span class="main-temperature">19</span>
+                <span class="main-temperature" id="main-temp">--</span>
                 <div class="unit-selector">
                     <span class="unit-c">°C</span>
-                    <span class="unit-divider">|</span>
-                    <span class="unit-f">°F</span>
                 </div>
             </div>
             <ul class="weather-details-list">
-                <li>Precipitation: 48%</li>
-                <li>Halumigmig: 100%</li>
-                <li>Hangin: 8 km/h</li>
+                <li>Precipitation: <strong id="main-precip" style="color: #f1f5f9;">--%</strong></li>
+                <li>Halumigmig: <strong id="main-humidity" style="color: #f1f5f9;">--%</strong></li>
+                <li>Hangin: <strong id="main-wind" style="color: #f1f5f9;">-- km/h</strong></li>
             </ul>
         </div>
         <div class="header-right">
-            <h1 class="weather-title">Lagay ng panahon</h1>
-            <p class="date-time">Martes 8:00 AM</p>
-            <p class="weather-condition">Ambon</p>
+            <h1 class="weather-title">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="location-name">Nag-hahanap ng GPS...</span>
+            </h1>
+            <p class="date-time" id="date-time-display">--</p>
+            <p class="weather-condition" id="weather-condition">Binabasa ang data...</p>
         </div>
     </header>
 
     <!-- Tabs Section -->
     <nav class="tabs-section">
         <ul class="tabs-list">
-            <li class="tab-item active">Temperatura</li>
-            <li class="tab-item">Precipitation</li>
-            <li class="tab-item">Hangin</li>
+            <li class="tab-item active" onclick="switchTab('temp', this)">Temperatura</li>
+            <li class="tab-item" onclick="switchTab('precip', this)">Precipitation</li>
+            <li class="tab-item" onclick="switchTab('wind', this)">Hangin</li>
         </ul>
     </nav>
 
-    <!-- Hourly Graph Section (Tweak: Cleaner SVG graph) -->
+    <!-- Hourly Graph Section -->
     <section class="hourly-graph-section">
-        <div class="graph-numbers">
-            <div class="temp-point">19</div>
-            <div class="temp-point">19</div>
-            <div class="temp-point point-3pm">21</div>
-            <div class="temp-point point-6pm">20</div>
-            <div class="temp-point">19</div>
-            <div class="temp-point">19</div>
-            <div class="temp-point">19</div>
-            <div class="temp-point">19</div>
+        <div class="graph-numbers" id="graph-numbers">
+            <!-- Dynamic numbers generated via JS -->
         </div>
         
-        <!-- Tweak: Custom SVG curve for the line -->
         <svg class="graph-svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
-            <path class="graph-fill" d="M0,80 C125,80 125,80 250,80 C375,80 375,0 500,0 C625,0 625,30 750,30 L1000,30 L1000,100 L0,100 Z"></path>
-            <path class="graph-line" d="M0,80 C125,80 125,80 250,80 C375,80 375,0 500,0 C625,0 625,30 750,30 L1000,30"></path>
+            <path id="graph-fill" class="graph-fill" d=""></path>
+            <path id="graph-line" class="graph-line" d=""></path>
         </svg>
 
-        <div class="graph-times">
-            <div>9 AM</div>
-            <div>12 PM</div>
-            <div>3 PM</div>
-            <div>6 PM</div>
-            <div>9 PM</div>
-            <div>12 AM</div>
-            <div>3 AM</div>
-            <div>6 AM</div>
+        <div class="graph-times" id="graph-times">
+            <!-- Dynamic timestamps generated via JS -->
         </div>
     </section>
 
-    <!-- Daily Forecast Section -->
-    <section class="daily-forecast-section">
-        <!-- Tweak: Subtly elevated cards with hover -->
-        <div class="forecast-card selected">
-            <span class="forecast-day">Mar</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-showers-heavy"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">21°</span><span class="forecast-low">19°</span>
-            </div>
-        </div>
-        
-        <div class="forecast-card">
-            <span class="forecast-day">Miy</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-showers-heavy"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">20°</span><span class="forecast-low">18°</span>
-            </div>
-        </div>
-        
-        <div class="forecast-card">
-            <span class="forecast-day">Huw</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-showers-heavy"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">21°</span><span class="forecast-low">18°</span>
-            </div>
-        </div>
-        
-        <div class="forecast-card">
-            <span class="forecast-day">Biy</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-sun-rain"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">21°</span><span class="forecast-low">19°</span>
-            </div>
-        </div>
-        
-        <div class="forecast-card thunder-icon-card">
-            <span class="forecast-day">Sab</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-bolt"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">21°</span><span class="forecast-low">19°</span>
-            </div>
-        </div>
-        
-        <div class="forecast-card thunder-icon-card">
-            <span class="forecast-day">Lin</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-bolt"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">21°</span><span class="forecast-low">20°</span>
-            </div>
-        </div>
-        
-        <div class="forecast-card">
-            <span class="forecast-day">Lun</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-rain"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">21°</span><span class="forecast-low">20°</span>
-            </div>
-        </div>
-        
-        <div class="forecast-card">
-            <span class="forecast-day">Mar</span>
-            <div class="forecast-icon-container">
-                <i class="fa-solid fa-cloud-showers-heavy"></i>
-            </div>
-            <div class="forecast-temps">
-                <span class="forecast-high">22°</span><span class="forecast-low">21°</span>
-            </div>
-        </div>
+    <!-- 8-Day Daily Forecast Section -->
+    <section class="daily-forecast-section" id="daily-forecast">
+        <!-- Dynamic cards generated via JS -->
     </section>
 </div>
 
+<script>
+    let activeTab = 'temp';
+    let weatherDataCache = null;
+    let userLat = 14.5995;
+    let userLon = 120.9842;
+
+    window.onload = function() {
+        initGeolocation();
+        
+        // Realtime Refresh: Kukuha ng pinakabagong data kada 10 segundo
+        setInterval(() => {
+            fetchWeatherData(userLat, userLon);
+        }, 10000);
+    };
+
+    function initGeolocation() {
+        const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                userLat = position.coords.latitude;
+                userLon = position.coords.longitude;
+                fetchLocationName(userLat, userLon);
+                fetchWeatherData(userLat, userLon);
+            }, error => {
+                console.warn("GPS Denied/Failed. Fallback to default.");
+                document.getElementById("location-name").innerText = "Manila, Philippines";
+                fetchWeatherData(userLat, userLon);
+            }, options);
+        } else {
+            fetchWeatherData(userLat, userLon);
+        }
+    }
+
+    // Dynamic OpenStreetMap Geocoding
+    function fetchLocationName(lat, lon) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+            .then(res => res.json())
+            .then(data => {
+                const addr = data.address || {};
+                const city = addr.city || addr.town || addr.municipality || addr.village || addr.suburb || "Lokal na Lugar";
+                const country = addr.country || "";
+                document.getElementById("location-name").innerText = `${city}, ${country}`;
+            })
+            .catch(() => {
+                document.getElementById("location-name").innerText = "Lokal na Panahon";
+            });
+    }
+
+    // Fetch Weather Data galing sa Open-Meteo
+    function fetchWeatherData(lat, lon) {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                weatherDataCache = data;
+                updateMainUI(data);
+                renderGraph(data, activeTab);
+                renderDailyForecast(data);
+            })
+            .catch(err => console.error("Error fetching realtime data:", err));
+    }
+
+    function updateMainUI(data) {
+        const current = data.current;
+        document.getElementById("main-temp").innerText = Math.round(current.temperature_2m);
+        document.getElementById("main-humidity").innerText = current.relative_humidity_2m + "%";
+        document.getElementById("main-precip").innerText = current.precipitation + " mm";
+        document.getElementById("main-wind").innerText = current.wind_speed_10m + " km/h";
+        document.getElementById("weather-condition").innerText = getWeatherText(current.weather_code);
+        document.getElementById("main-icon").className = `fa-solid ${getWeatherIconClass(current.weather_code)} main-icon`;
+
+        // Updated Current Time Format
+        const now = new Date();
+        const days = ['Linggo', 'Lunes', 'Martes', 'Miyerkules', 'Huwebes', 'Biyernes', 'Sabado'];
+        const dayName = days[now.getDay()];
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        document.getElementById("date-time-display").innerText = `${dayName} ${hours}:${minutes} ${ampm}`;
+    }
+
+    function switchTab(tabName, element) {
+        activeTab = tabName;
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        // Dynamic Theme Accent per Tab
+        const root = document.documentElement;
+        if (tabName === 'temp') root.style.setProperty('--line-graph', '#f59e0b');
+        else if (tabName === 'precip') root.style.setProperty('--line-graph', '#38bdf8');
+        else if (tabName === 'wind') root.style.setProperty('--line-graph', '#10b981');
+
+        if (weatherDataCache) {
+            renderGraph(weatherDataCache, tabName);
+        }
+    }
+
+    // Render SVG Graph base sa piniling tab
+    function renderGraph(data, type) {
+        const hourly = data.hourly;
+        const nowHour = new Date().getHours();
+        
+        let values = [];
+        let unit = "";
+
+        if (type === 'temp') {
+            values = hourly.temperature_2m.slice(nowHour, nowHour + 8).map(v => Math.round(v));
+            unit = "°";
+        } else if (type === 'precip') {
+            values = hourly.precipitation_probability.slice(nowHour, nowHour + 8).map(v => Math.round(v));
+            unit = "%";
+        } else if (type === 'wind') {
+            values = hourly.wind_speed_10m.slice(nowHour, nowHour + 8).map(v => Math.round(v));
+            unit = "k/h";
+        }
+
+        // Render Numbers
+        const numbersContainer = document.getElementById("graph-numbers");
+        numbersContainer.innerHTML = values.map(val => `<div class="temp-point">${val}${unit}</div>`).join('');
+
+        // Render Timestamps
+        const timesContainer = document.getElementById("graph-times");
+        let timesHTML = "";
+        for (let i = 0; i < 8; i++) {
+            let h = (nowHour + i * 3) % 24;
+            let displayHour = h % 12 || 12;
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            timesHTML += `<div>${displayHour} ${ampm}</div>`;
+        }
+        timesContainer.innerHTML = timesHTML;
+
+        // Generate Smooth SVG Path
+        const minVal = Math.min(...values);
+        const maxVal = Math.max(...values);
+        const range = (maxVal - minVal) || 1;
+
+        const points = values.map((val, idx) => {
+            const x = (idx / 7) * 1000;
+            const y = 80 - ((val - minVal) / range) * 60;
+            return { x, y };
+        });
+
+        let d = `M ${points[0].x},${points[0].y}`;
+        for (let i = 0; i < points.length - 1; i++) {
+            const xc = (points[i].x + points[i + 1].x) / 2;
+            const yc = (points[i].y + points[i + 1].y) / 2;
+            d += ` Q ${points[i].x},${points[i].y} ${xc},${yc}`;
+        }
+        d += ` L ${points[points.length - 1].x},${points[points.length - 1].y}`;
+
+        document.getElementById("graph-line").setAttribute("d", d);
+        document.getElementById("graph-fill").setAttribute("d", `${d} L 1000,100 L 0,100 Z`);
+    }
+
+    function renderDailyForecast(data) {
+        const daily = data.daily;
+        const container = document.getElementById("daily-forecast");
+        const days = ['Lin', 'Lun', 'Mar', 'Miy', 'Huw', 'Biy', 'Sab'];
+        const todayIdx = new Date().getDay();
+
+        let html = "";
+        for (let i = 0; i < 8; i++) {
+            if (!daily.time[i]) break;
+            const dayName = days[(todayIdx + i) % 7];
+            const maxTemp = Math.round(daily.temperature_2m_max[i]);
+            const minTemp = Math.round(daily.temperature_2m_min[i]);
+            const code = daily.weather_code[i];
+
+            html += `
+                <div class="forecast-card ${i === 0 ? 'selected' : ''}">
+                    <span class="forecast-day">${dayName}</span>
+                    <div class="forecast-icon-container">
+                        <i class="fa-solid ${getWeatherIconClass(code)}"></i>
+                    </div>
+                    <div class="forecast-temps">
+                        <span class="forecast-high">${maxTemp}°</span>
+                        <span class="forecast-low">${minTemp}°</span>
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+    }
+
+    function getWeatherText(code) {
+        const codes = {
+            0: "Maliwanag na Kalangitan",
+            1: "Bahagyang Maaliwalas",
+            2: "Bahagyang Mabulap",
+            3: "Mabulap",
+            45: "Mabuway / Makapal ang Ulap",
+            51: "Mahinang Ambon",
+            61: "Mahinang Ulan",
+            63: "Katamtamang Ulan",
+            80: "Malakas na Buhos ng Ulan",
+            95: "May Pag-kulog at Pag-kidlat"
+        };
+        return codes[code] || "Karaniwang Panahon";
+    }
+
+    function getWeatherIconClass(code) {
+        if (code === 0) return "fa-sun";
+        if (code === 1 || code === 2) return "fa-cloud-sun";
+        if (code === 3) return "fa-cloud";
+        if (code >= 51 && code <= 65) return "fa-cloud-showers-heavy";
+        if (code >= 80 && code <= 82) return "fa-cloud-rain";
+        if (code >= 95) return "fa-cloud-bolt";
+        return "fa-cloud-sun";
+    }
+</script>
 </body>
 </html>
