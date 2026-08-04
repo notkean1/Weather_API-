@@ -140,7 +140,7 @@
             margin-bottom: 12px;
         }
 
-        /* --- Live Satellite Trigger Button --- */
+        /* --- Direct External Satellite Button --- */
         .satellite-btn {
             display: inline-flex;
             align-items: center;
@@ -152,6 +152,7 @@
             border-radius: 20px;
             font-size: 0.88rem;
             font-weight: 500;
+            text-decoration: none;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -296,166 +297,6 @@
         .forecast-high { color: var(--text-primary); }
         .forecast-low { color: var(--text-secondary); margin-left: 4px; }
 
-        /* --- MODAL & RESIZABLE STYLES --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 999;
-            display: none;
-        }
-
-        .satellite-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 520px;
-            height: 420px;
-            background-color: var(--bg-card);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-
-        .modal-header {
-            padding: 12px 16px;
-            background-color: #1e2632;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: move;
-            user-select: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .modal-title {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--accent-blue);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .modal-controls { display: flex; gap: 8px; }
-
-        .control-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            cursor: pointer;
-            width: 26px;
-            height: 26px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .control-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-
-        .control-btn.close-btn:hover {
-            background-color: #ef4444;
-            color: #fff;
-        }
-
-        .modal-body {
-            flex: 1;
-            position: relative;
-            background-color: #000;
-            overflow: hidden;
-        }
-
-        .satellite-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            pointer-events: auto;
-        }
-
-        /* Prevent iFrame from capturing pointer events while dragging/resizing */
-        .modal-body.iframe-disabled iframe {
-            pointer-events: none !important;
-        }
-
-        .modal-footer {
-            padding: 10px 16px;
-            background-color: #1e2632;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .location-badge {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .external-link-btn {
-            color: var(--accent-blue);
-            font-size: 0.85rem;
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .external-link-btn:hover { text-decoration: underline; }
-
-        /* Custom Resizer Edges */
-        .resizer { position: absolute; z-index: 1001; }
-        .resizer.r { cursor: e-resize; right: 0; top: 0; width: 6px; height: 100%; }
-        .resizer.b { cursor: s-resize; bottom: 0; left: 0; width: 100%; height: 6px; }
-        .resizer.l { cursor: w-resize; left: 0; top: 0; width: 6px; height: 100%; }
-        .resizer.t { cursor: n-resize; top: 0; left: 0; width: 100%; height: 6px; }
-        .resizer.rb { cursor: se-resize; right: 0; bottom: 0; width: 12px; height: 12px; }
-        .resizer.lb { cursor: sw-resize; left: 0; bottom: 0; width: 12px; height: 12px; }
-        .resizer.rt { cursor: ne-resize; right: 0; top: 0; width: 12px; height: 12px; }
-        .resizer.lt { cursor: nw-resize; left: 0; top: 0; width: 12px; height: 12px; }
-
-        /* Minimized State */
-        .satellite-modal.minimized {
-            top: auto !important;
-            left: auto !important;
-            bottom: 20px !important;
-            right: 20px !important;
-            transform: none !important;
-            width: 280px !important;
-            height: 48px !important;
-            border-radius: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-        }
-
-        .satellite-modal.minimized .modal-body,
-        .satellite-modal.minimized .modal-footer,
-        .satellite-modal.minimized .resizer {
-            display: none !important;
-        }
-
-        .satellite-modal.minimized .modal-header {
-            border-bottom: none;
-            height: 100%;
-            border-radius: 24px;
-            background-color: var(--bg-card);
-        }
-
         @media (max-width: 768px) {
             .weather-header { flex-direction: column; }
             .header-right { text-align: left; align-items: flex-start; }
@@ -492,10 +333,12 @@
             <p class="date-time" id="date-time-display">--</p>
             <p class="weather-condition" id="weather-condition">Binabasa ang data...</p>
 
-            <button class="satellite-btn" onclick="openSatelliteModal()">
+            <!-- Direct External Link Button to Zoom Earth Satellite -->
+            <a id="satellite-link" href="https://zoom.earth/" target="_blank" class="satellite-btn">
                 <i class="fa-solid fa-earth-americas"></i>
                 <span>See Live Satellite</span>
-            </button>
+                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i>
+            </a>
         </div>
     </header>
 
@@ -522,45 +365,6 @@
     <section class="daily-forecast-section" id="daily-forecast"></section>
 </div>
 
-<!-- POPUP MODAL OVERLAY & CONTAINER -->
-<div class="modal-overlay" id="modal-overlay" onclick="minimizeSatelliteModal()"></div>
-
-<div class="satellite-modal" id="satellite-modal">
-    <!-- Resizer Handles -->
-    <div class="resizer t"></div>
-    <div class="resizer r"></div>
-    <div class="resizer b"></div>
-    <div class="resizer l"></div>
-    <div class="resizer rt"></div>
-    <div class="resizer rb"></div>
-    <div class="resizer lb"></div>
-    <div class="resizer lt"></div>
-
-    <div class="modal-header" id="modal-header">
-        <div class="modal-title" onclick="restoreSatelliteModal()" style="cursor: pointer;">
-            <i class="fa-solid fa-satellite-dish"></i>
-            <span>Live Satellite Tracking</span>
-        </div>
-        <div class="modal-controls">
-            <button class="control-btn" title="Minimize" onclick="minimizeSatelliteModal()"><i class="fa-solid fa-minus"></i></button>
-            <button class="control-btn close-btn" title="Close" onclick="closeSatelliteModal()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-    </div>
-    
-    <div class="modal-body" id="modal-body">
-        <!-- Live RainViewer / OpenStreetMap Radar Satellite Embed -->
-        <iframe id="satellite-frame" class="satellite-iframe" src="" allowfullscreen></iframe>
-    </div>
-
-    <div class="modal-footer">
-        <span class="location-badge"><i class="fa-solid fa-location-arrow"></i> <span id="modal-country">Pilipinas</span></span>
-        <a href="https://zoom.earth/storms/94w-2026/" target="_blank" class="external-link-btn">
-            <span>Palakihin sa Zoom Earth</span>
-            <i class="fa-solid fa-up-right-from-square"></i>
-        </a>
-    </div>
-</div>
-
 <script>
     let activeTab = 'temp';
     let weatherDataCache = null;
@@ -569,8 +373,8 @@
 
     window.onload = function() {
         initGeolocation();
-        initDraggableAndResizable();
 
+        // Automatic live sync every 10 seconds
         setInterval(() => {
             fetchWeatherData(userLat, userLon);
         }, 10000);
@@ -582,15 +386,24 @@
             navigator.geolocation.getCurrentPosition(position => {
                 userLat = position.coords.latitude;
                 userLon = position.coords.longitude;
+                updateSatelliteLink(userLat, userLon);
                 fetchLocationName(userLat, userLon);
                 fetchWeatherData(userLat, userLon);
             }, error => {
                 document.getElementById("location-name").innerText = "Manila, Philippines";
+                updateSatelliteLink(userLat, userLon);
                 fetchWeatherData(userLat, userLon);
             }, options);
         } else {
+            updateSatelliteLink(userLat, userLon);
             fetchWeatherData(userLat, userLon);
         }
+    }
+
+    // Dynamic link generation pointing directly to Zoom Earth centered at user coordinates
+    function updateSatelliteLink(lat, lon) {
+        const zoomEarthUrl = `https://zoom.earth/maps/satellite/#view=${lat},${lon},7z`;
+        document.getElementById("satellite-link").href = zoomEarthUrl;
     }
 
     function fetchLocationName(lat, lon) {
@@ -601,7 +414,6 @@
                 const city = addr.city || addr.town || addr.municipality || addr.village || addr.suburb || "Lokal na Lugar";
                 const country = addr.country || "Pilipinas";
                 document.getElementById("location-name").innerText = `${city}, ${country}`;
-                document.getElementById("modal-country").innerText = country;
             })
             .catch(() => {
                 document.getElementById("location-name").innerText = "Lokal na Panahon";
@@ -639,152 +451,6 @@
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12 || 12;
         document.getElementById("date-time-display").innerText = `${dayName} ${hours}:${minutes} ${ampm}`;
-    }
-
-    /* --- SATELLITE MODAL LOGIC --- */
-    function openSatelliteModal() {
-        const modal = document.getElementById("satellite-modal");
-        const overlay = document.getElementById("modal-overlay");
-        const iframe = document.getElementById("satellite-frame");
-
-        if (modal.classList.contains("minimized")) {
-            restoreSatelliteModal();
-            return;
-        }
-
-        // Live Radar & Satellite Embed using RainViewer Open API (Guaranteed Works on Embeds)
-        if (!iframe.src || iframe.src === "about:blank") {
-            iframe.src = `https://www.rainviewer.com/map.html?loc=${userLat},${userLon},6&oScheme=2&settings=1&base=1&radar=1&smooth=1&coverage=1`;
-        }
-
-        modal.style.display = "flex";
-        overlay.style.display = "block";
-    }
-
-    function minimizeSatelliteModal() {
-        const modal = document.getElementById("satellite-modal");
-        const overlay = document.getElementById("modal-overlay");
-        modal.classList.add("minimized");
-        overlay.style.display = "none";
-    }
-
-    function restoreSatelliteModal() {
-        const modal = document.getElementById("satellite-modal");
-        const overlay = document.getElementById("modal-overlay");
-        if (modal.classList.contains("minimized")) {
-            modal.classList.remove("minimized");
-            overlay.style.display = "block";
-        }
-    }
-
-    function closeSatelliteModal() {
-        const modal = document.getElementById("satellite-modal");
-        const overlay = document.getElementById("modal-overlay");
-        const iframe = document.getElementById("satellite-frame");
-
-        modal.style.display = "none";
-        overlay.style.display = "none";
-        modal.classList.remove("minimized");
-        iframe.src = "";
-    }
-
-    /* --- DRAGGABLE & ADVANCED RESIZABLE SYSTEM --- */
-    function initDraggableAndResizable() {
-        const modal = document.getElementById("satellite-modal");
-        const header = document.getElementById("modal-header");
-        const modalBody = document.getElementById("modal-body");
-
-        // Dragging Logic
-        let px = 0, py = 0, cX = 0, cY = 0;
-        header.onmousedown = (e) => {
-            if (modal.classList.contains("minimized")) return;
-            e.preventDefault();
-            cX = e.clientX;
-            cY = e.clientY;
-            modalBody.classList.add("iframe-disabled");
-            document.onmouseup = closeDrag;
-            document.onmousemove = dragModal;
-        };
-
-        function dragModal(e) {
-            e.preventDefault();
-            px = cX - e.clientX;
-            py = cY - e.clientY;
-            cX = e.clientX;
-            cY = e.clientY;
-            modal.style.top = (modal.offsetTop - py) + "px";
-            modal.style.left = (modal.offsetLeft - px) + "px";
-            modal.style.transform = "none";
-        }
-
-        function closeDrag() {
-            modalBody.classList.remove("iframe-disabled");
-            document.onmouseup = null;
-            document.onmousemove = null;
-        }
-
-        // Advanced Edge-Resizing Logic with Limits
-        const resizers = modal.querySelectorAll('.resizer');
-        const minW = 340, minH = 280;
-        const maxW = window.innerWidth * 0.9;
-        const maxH = window.innerHeight * 0.85;
-
-        resizers.forEach(resizer => {
-            resizer.addEventListener('mousedown', (e) => {
-                if (modal.classList.contains("minimized")) return;
-                e.preventDefault();
-                modalBody.classList.add("iframe-disabled");
-
-                let startW = modal.offsetWidth;
-                let startH = modal.offsetHeight;
-                let startX = e.clientX;
-                let startY = e.clientY;
-                let startL = modal.offsetLeft;
-                let startT = modal.offsetTop;
-
-                function doResize(e) {
-                    let w = startW, h = startH, l = startL, t = startT;
-
-                    if (resizer.classList.contains('r') || resizer.classList.contains('rb') || resizer.classList.contains('rt')) {
-                        w = startW + (e.clientX - startX);
-                    }
-                    if (resizer.classList.contains('b') || resizer.classList.contains('rb') || resizer.classList.contains('lb')) {
-                        h = startH + (e.clientY - startY);
-                    }
-                    if (resizer.classList.contains('l') || resizer.classList.contains('lb') || resizer.classList.contains('lt')) {
-                        w = startW - (e.clientX - startX);
-                        l = startL + (e.clientX - startX);
-                    }
-                    if (resizer.classList.contains('t') || resizer.classList.contains('rt') || resizer.classList.contains('lt')) {
-                        h = startH - (e.clientY - startY);
-                        t = startT + (e.clientY - startY);
-                    }
-
-                    // Apply Constraints
-                    if (w >= minW && w <= maxW) {
-                        modal.style.width = w + 'px';
-                        if (resizer.classList.contains('l') || resizer.classList.contains('lb') || resizer.classList.contains('lt')) {
-                            modal.style.left = l + 'px';
-                        }
-                    }
-                    if (h >= minH && h <= maxH) {
-                        modal.style.height = h + 'px';
-                        if (resizer.classList.contains('t') || resizer.classList.contains('rt') || resizer.classList.contains('lt')) {
-                            modal.style.top = t + 'px';
-                        }
-                    }
-                }
-
-                function stopResize() {
-                    modalBody.classList.remove("iframe-disabled");
-                    window.removeEventListener('mousemove', doResize);
-                    window.removeEventListener('mouseup', stopResize);
-                }
-
-                window.addEventListener('mousemove', doResize);
-                window.addEventListener('mouseup', stopResize);
-            });
-        });
     }
 
     function switchTab(tabName, element) {
