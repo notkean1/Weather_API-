@@ -67,6 +67,12 @@
             margin-bottom: 5px;
         }
 
+        .feels-like {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
         .weather-desc {
             font-size: 1.1rem;
             color: #38bdf8;
@@ -160,12 +166,13 @@
                 <i class="fa-solid fa-location-dot"></i>
                 <span id="location-name">Pinpointing location...</span>
             </div>
-            <i class="fa-solid fa-cloud-sun fa-xl" style="color: #38bdf8;"></i>
+            <i id="weather-icon" class="fa-solid fa-cloud-sun fa-xl" style="color: #38bdf8;"></i>
         </div>
 
         <!-- Main Temp Display -->
         <div class="main-weather">
             <div class="temperature" id="temp">--°</div>
+            <div class="feels-like" id="feels-like">Feels like --°C</div>
             <div class="weather-desc" id="weather-desc">Kasalukuyang Panahon</div>
         </div>
 
@@ -206,34 +213,48 @@
 
     <script>
         window.onload = function() {
+            // High precision Geolocation settings
+            const geoOptions = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            };
+
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
                     
-                    // Tawagin ang dalawang function: isa para sa address, isa para sa weather
-                    fetchLocationName(lat, lon);
-                    fetchWeatherData(lat, lon);
+                    loadData(lat, lon);
+
+                    // Realtime Auto-refresh (Every 5 Minutes)
+                    setInterval(() => {
+                        fetchWeatherData(lat, lon);
+                    }, 300000);
+
                 }, error => {
-                    document.getElementById("location-name").innerText = "Manila, Philippines";
-                    fetchWeatherData(14.5995, 120.9842); // Default fallback
-                });
+                    console.warn("GPS access denied or failed. Fallback to default coordinates.");
+                    loadData(14.5995, 120.9842); // Default Fallback (Manila)
+                }, geoOptions);
             } else {
-                fetchLocationName(14.5995, 120.9842);
-                fetchWeatherData(14.5995, 120.9842);
+                loadData(14.5995, 120.9842);
             }
         };
 
-        // Libreng API para makuha ang pangalan ng lugar (City/Country) galing sa Lat/Lon
+        function loadData(lat, lon) {
+            fetchLocationName(lat, lon);
+            fetchWeatherData(lat, lon);
+        }
+
+        // OpenStreetMap Reverse Geocoding
         function fetchLocationName(lat, lon) {
             const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
 
             fetch(geoUrl)
                 .then(response => response.json())
                 .then(data => {
-                    const address = data.address;
-                    // Kukunin ang City o Town o Municipality, at Country
-                    const city = address.city || address.town || address.municipality || address.village || "Unknown Area";
+                    const address = data.address || {};
+                    const city = address.city || address.town || address.municipality || address.village || address.suburb || "Unknown Area";
                     const country = address.country || "";
                     
                     document.getElementById("location-name").innerText = `${city}, ${country}`;
@@ -243,21 +264,35 @@
                 });
         }
 
+        // Dynamic Weather Fetching Gamit ang Iyong Dynamic Parameters
         function fetchWeatherData(lat, lon) {
-            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,rain,weather_code,cloud_cover,wind_speed_10m`;
+            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,sunrise,sunset,daylight_duration,moonrise,sunshine_duration,moonset,moon_phase,rain_sum,showers_sum,precipitation_sum,precipitation_probability_max,precipitation_hours&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,showers,rain,weather_code,wind_speed_10m,temperature_80m,wind_gusts_10m,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,evapotranspiration,precipitation_probability,precipitation&current=weather_code,cloud_cover,precipitation,temperature_2m,relative_humidity_2m,apparent_temperature,is_day,wind_speed_10m,rain,showers&timezone=auto`;
 
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
                     const current = data.current;
                     
+                    // Main Weather UI Updates
                     document.getElementById("temp").innerText = Math.round(current.temperature_2m) + "°";
+                    document.getElementById("feels-like").innerText = "Feels like " + Math.round(current.apparent_temperature) + "°C";
                     document.getElementById("humidity").innerText = current.relative_humidity_2m + "%";
                     document.getElementById("precip").innerText = current.precipitation + " mm";
                     document.getElementById("wind").innerText = current.wind_speed_10m + " km/h";
                     document.getElementById("clouds").innerText = current.cloud_cover + "%";
                     document.getElementById("weather-desc").innerText = getWeatherDescription(current.weather_code);
-                });
+                    
+                    // Dynamic Header Icon base sa Araw/Gabi (is_day)
+                    const weatherIcon = document.getElementById("weather-icon");
+                    if (current.is_day === 0) {
+                        weatherIcon.className = "fa-solid fa-moon fa-xl";
+                        weatherIcon.style.color = "#f1f5f9";
+                    } else {
+                        weatherIcon.className = "fa-solid fa-cloud-sun fa-xl";
+                        weatherIcon.style.color = "#38bdf8";
+                    }
+                })
+                .catch(err => console.error("Error fetching weather:", err));
         }
 
         function getWeatherDescription(code) {
@@ -266,9 +301,16 @@
                 1: "Mainly clear 🌤️",
                 2: "Partly cloudy ⛅",
                 3: "Overcast ☁️",
+                45: "Foggy 🌫️",
+                48: "Depositing rime fog 🌫️",
                 51: "Light drizzle 🌧️",
+                53: "Moderate drizzle 🌧️",
+                55: "Dense drizzle 🌧️",
                 61: "Slight rain 🌧️",
                 63: "Moderate rain 🌧️",
+                65: "Heavy rain 🌧️",
+                80: "Slight rain showers 🌦️",
+                81: "Moderate rain showers 🌦️",
                 95: "Thunderstorm ⚡"
             };
             return codes[code] || "Normal Weather 🌥️";
