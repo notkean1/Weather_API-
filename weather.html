@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Weather Dashboard</title>
+    <!-- Google Fonts & FontAwesome for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .weather-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 420px;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .location-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #38bdf8;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .main-weather {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .temperature {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .weather-desc {
+            font-size: 1.1rem;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        /* Extra Details Grid */
+        .extra-details {
+            display: none;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-card {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-card span {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .detail-card strong {
+            font-size: 1rem;
+            color: #f1f5f9;
+        }
+
+        /* Buttons Container */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #38bdf8;
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            background: #0ea5e9;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="weather-card">
+        <!-- Location Header -->
+        <div class="header">
+            <div class="location-box">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="location-name">Pinpointing location...</span>
+            </div>
+            <i class="fa-solid fa-cloud-sun fa-xl" style="color: #38bdf8;"></i>
+        </div>
+
+        <!-- Main Temp Display -->
+        <div class="main-weather">
+            <div class="temperature" id="temp">--°</div>
+            <div class="weather-desc" id="weather-desc">Kasalukuyang Panahon</div>
+        </div>
+
+        <!-- Hidden Details Grid -->
+        <div class="extra-details" id="extra-details">
+            <div class="detail-card">
+                <span>Humidity</span>
+                <strong id="humidity">--%</strong>
+            </div>
+            <div class="detail-card">
+                <span>Precipitation</span>
+                <strong id="precip">-- mm</strong>
+            </div>
+            <div class="detail-card">
+                <span>Wind Speed</span>
+                <strong id="wind">-- km/h</strong>
+            </div>
+            <div class="detail-card">
+                <span>Cloud Cover</span>
+                <strong id="clouds">--%</strong>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button class="btn btn-primary" id="see-more-btn" onclick="toggleDetails()">
+                <span>See More</span>
+                <i class="fa-solid fa-chevron-down" id="arrow-icon"></i>
+            </button>
+            
+            <!-- Zoom Earth Link -->
+            <a href="https://zoom.earth/" target="_blank" class="btn btn-secondary">
+                <i class="fa-solid fa-earth-americas"></i>
+                <span>See Live Satellite</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    // Tawagin ang dalawang function: isa para sa address, isa para sa weather
+                    fetchLocationName(lat, lon);
+                    fetchWeatherData(lat, lon);
+                }, error => {
+                    document.getElementById("location-name").innerText = "Manila, Philippines";
+                    fetchWeatherData(14.5995, 120.9842); // Default fallback
+                });
+            } else {
+                fetchLocationName(14.5995, 120.9842);
+                fetchWeatherData(14.5995, 120.9842);
+            }
+        };
+
+        // Libreng API para makuha ang pangalan ng lugar (City/Country) galing sa Lat/Lon
+        function fetchLocationName(lat, lon) {
+            const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+            fetch(geoUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.address;
+                    // Kukunin ang City o Town o Municipality, at Country
+                    const city = address.city || address.town || address.municipality || address.village || "Unknown Area";
+                    const country = address.country || "";
+                    
+                    document.getElementById("location-name").innerText = `${city}, ${country}`;
+                })
+                .catch(() => {
+                    document.getElementById("location-name").innerText = "Lokal na Panahon";
+                });
+        }
+
+        function fetchWeatherData(lat, lon) {
+            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,rain,weather_code,cloud_cover,wind_speed_10m`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const current = data.current;
+                    
+                    document.getElementById("temp").innerText = Math.round(current.temperature_2m) + "°";
+                    document.getElementById("humidity").innerText = current.relative_humidity_2m + "%";
+                    document.getElementById("precip").innerText = current.precipitation + " mm";
+                    document.getElementById("wind").innerText = current.wind_speed_10m + " km/h";
+                    document.getElementById("clouds").innerText = current.cloud_cover + "%";
+                    document.getElementById("weather-desc").innerText = getWeatherDescription(current.weather_code);
+                });
+        }
+
+        function getWeatherDescription(code) {
+            const codes = {
+                0: "Clear sky ☀️",
+                1: "Mainly clear 🌤️",
+                2: "Partly cloudy ⛅",
+                3: "Overcast ☁️",
+                51: "Light drizzle 🌧️",
+                61: "Slight rain 🌧️",
+                63: "Moderate rain 🌧️",
+                95: "Thunderstorm ⚡"
+            };
+            return codes[code] || "Normal Weather 🌥️";
+        }
+
+        function toggleDetails() {
+            const details = document.getElementById("extra-details");
+            const btnText = document.querySelector("#see-more-btn span");
+            const arrow = document.getElementById("arrow-icon");
+
+            if (details.style.display === "grid") {
+                details.style.display = "none";
+                btnText.innerText = "See More";
+                arrow.style.transform = "rotate(0deg)";
+            } else {
+                details.style.display = "grid";
+                btnText.innerText = "See Less";
+                arrow.style.transform = "rotate(180deg)";
+            }
+        }
+    </script>
+</body>
+</html>
